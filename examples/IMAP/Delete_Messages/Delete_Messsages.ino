@@ -28,6 +28,8 @@
 #endif
 #include <ESP_Mail_Client.h>
 
+//To use only IMAP functions, you can exclude the SMTP from compilation, see ESP_Mail_FS.h.
+
 #define WIFI_SSID "<ssid>"
 #define WIFI_PASSWORD "<password>"
 
@@ -121,12 +123,12 @@ void setup()
      * In this case we will delete last 10 messages by get the UID of these message 
      * and add it to the list
     */
-    for (int i = imap.selectedFolder().msgCount(); i > imap.selectedFolder().msgCount() - 10 && i > 0; i--)
+    for (int i = imap.selectedFolder().msgCount(); i > (int)imap.selectedFolder().msgCount() - 10 && i > 0; i--)
         toDelete.add(imap.getUID(i));
 
     /* Delete all messages in the list (move to trash) */
     if (imap.deleteMessages(&toDelete))
-        Serial.println("Messages deeted");
+        Serial.println("Messages deleted");
 
     /* Delete all messages permanently by assign the second param to true*/
     //imap.deleteMessages(&toDelete, true);

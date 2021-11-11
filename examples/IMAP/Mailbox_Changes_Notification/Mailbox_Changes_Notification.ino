@@ -28,6 +28,8 @@
 #endif
 #include <ESP_Mail_Client.h>
 
+//To use only IMAP functions, you can exclude the SMTP from compilation, see ESP_Mail_FS.h.
+
 #define WIFI_SSID "<ssid>"
 #define WIFI_PASSWORD "<password>"
 
@@ -293,6 +295,8 @@ void printMessages(std::vector<IMAP_MSG_Item> &msgItems, bool headerOnly)
 
         ESP_MAIL_PRINTF("Flags: %s\n", msg.flags);
 
+        //The attachment may not detect in search because the multipart/mixed
+        //was not found in Content-Type header field.
         ESP_MAIL_PRINTF("Attachment: %s\n", msg.hasAttachment ? "yes" : "no");
 
         if (strlen(msg.acceptLang))

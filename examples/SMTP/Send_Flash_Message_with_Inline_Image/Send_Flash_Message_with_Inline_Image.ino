@@ -28,6 +28,8 @@
 #endif
 #include <ESP_Mail_Client.h>
 
+//To use only SMTP functions, you can exclude the IMAP from compilation, see ESP_Mail_FS.h.
+
 #define WIFI_SSID "<ssid>"
 #define WIFI_PASSWORD "<password>"
 
@@ -160,7 +162,7 @@ void setup()
     message.sender.email = AUTHOR_EMAIL;
 
     message.subject = "Test sending base64 inline image stored in flash memory";
-    message.addRecipient("user1", "####@#####_dot_com");
+    message.addRecipient("user1", "change_this@your_mail_dot_com");
 
     /* Two alternative content versions are sending in this example e.g. plain text and html */
 

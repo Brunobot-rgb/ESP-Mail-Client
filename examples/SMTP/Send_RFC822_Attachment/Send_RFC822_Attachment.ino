@@ -25,6 +25,8 @@
 #endif
 #include <ESP_Mail_Client.h>
 
+//To use only SMTP functions, you can exclude the IMAP from compilation, see ESP_Mail_FS.h.
+
 /* This is for attachment data */
 #include "image.h"
 
@@ -114,7 +116,7 @@ void setup()
   message.sender.name = "ESP Mail";
   message.sender.email = AUTHOR_EMAIL;
   message.subject = "Test sending Email with rfc822 attachment";
-  message.addRecipient("Someone", "####@#####_dot_com");
+  message.addRecipient("Someone", "change_this@your_mail_dot_com");
 
   message.text.content = "This is simple plain text message with rfc822 attachment";
 

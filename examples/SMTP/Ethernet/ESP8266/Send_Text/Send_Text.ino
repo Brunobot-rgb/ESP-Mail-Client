@@ -35,6 +35,8 @@
 #include <ESP8266WiFi.h>
 #include <ESP_Mail_Client.h>
 
+//To use only SMTP functions, you can exclude the IMAP from compilation, see ESP_Mail_FS.h.
+
 #ifdef ESP8266_CORE_SDK_V3_X_X
 #include <ENC28J60lwIP.h>
 //#include <W5100lwIP.h>
@@ -148,7 +150,7 @@ void sendMail()
   message.sender.name = "ESP Mail";
   message.sender.email = AUTHOR_EMAIL;
   message.subject = "Test sending plain text Email";
-  message.addRecipient("Someone", "####@#####_dot_com");
+  message.addRecipient("Someone", "change_this@your_mail_dot_com");
 
   String textMsg = "This is simple plain text message";
   message.text.content = textMsg.c_str();

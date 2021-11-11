@@ -1,7 +1,7 @@
 /*
  * ESP32 TCP Client Library. 
  * 
- * v 1.0.1
+ * v 1.0.2
  * 
  * The MIT License (MIT)
  * Copyright (c) 2021 K. Suwatchai (Mobizt)
@@ -39,13 +39,9 @@
 #include <FS.h>
 #include <SPIFFS.h>
 #include <SD.h>
-#include "ESP_Mail_FS.h"
 #include "ESP32_WCS.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#define ESP_MAIL_FLASH_FS ESP_Mail_DEFAULT_FLASH_FS
-#define ESP_MAIL_SD_FS ESP_Mail_DEFAULT_SD_FS
+
 
 #define TCP_CLIENT_ERROR_CONNECTION_REFUSED (-1)
 #define TCP_CLIENT_ERROR_SEND_DATA_FAILED (-2)
@@ -106,14 +102,14 @@ public:
   void setDebugCallback(DebugMsgCallback cb);
 
   int _certType = -1;
-  std::string _caCertFile = "";
+  MBSTRING _caCertFile;
   esp_mail_file_storage_type _caCertFileStoreageType = esp_mail_file_storage_type::esp_mail_file_storage_type_none;
 
 protected:
   DebugMsgCallback _debugCallback = NULL;
   std::unique_ptr<ESP32_WCS> _wcs = std::unique_ptr<ESP32_WCS>(new ESP32_WCS());
 
-  std::string _host = "";
+  MBSTRING _host;
   uint16_t _port = 0;
 };
 

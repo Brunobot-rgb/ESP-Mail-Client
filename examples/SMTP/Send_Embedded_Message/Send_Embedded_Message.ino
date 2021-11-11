@@ -25,6 +25,8 @@
 #endif
 #include <ESP_Mail_Client.h>
 
+//To use only SMTP functions, you can exclude the IMAP from compilation, see ESP_Mail_FS.h.
+
 #define WIFI_SSID "<ssid>"
 #define WIFI_PASSWORD "<password>"
 
@@ -111,7 +113,7 @@ void setup()
   message.sender.name = "ESP Mail";
   message.sender.email = AUTHOR_EMAIL;
   message.subject = "Test sending message as embedded files";
-  message.addRecipient("Admin", "####@#####_dot_com");
+  message.addRecipient("Admin", "change_this@your_mail_dot_com");
 
   message.html.content = "<span style=\"color:#0055ff;\">This is html message</span>";
 

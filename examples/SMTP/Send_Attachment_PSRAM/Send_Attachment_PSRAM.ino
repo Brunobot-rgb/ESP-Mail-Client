@@ -1,9 +1,7 @@
 
 
 /**
- * This example will send the Email in plain text version
- * with the quoted text and long line text.
- * 
+ * This example will send the Email with attachment stored in PSRAM (ESP32 only).
  * 
  * Created by K. Suwatchai (Mobizt)
  * 
@@ -20,8 +18,6 @@
 #include <Arduino.h>
 #if defined(ESP32)
 #include <WiFi.h>
-#elif defined(ESP8266)
-#include <ESP8266WiFi.h>
 #endif
 #include <ESP_Mail_Client.h>
 
@@ -55,18 +51,13 @@ SMTPSession smtp;
 /* Callback function to get the Email sending status */
 void smtpCallback(SMTP_Status status);
 
+const char rootCACert[] PROGMEM = "-----BEGIN CERTIFICATE-----\n"
+                                  "-----END CERTIFICATE-----\n";
+
 void setup()
 {
 
     Serial.begin(115200);
-
-#if defined(ARDUINO_ARCH_SAMD)
-    while (!Serial)
-        ;
-    Serial.println();
-    Serial.println("**** Custom built WiFiNINA firmware need to be installed.****\nTo install firmware, read the instruction here, https://github.com/mobizt/ESP-Mail-Client#install-custom-built-wifinina-firmware");
-
-#endif
 
     Serial.println();
 
@@ -86,11 +77,11 @@ void setup()
     Serial.println();
 
     /** Enable the debug via Serial port
-     * none debug or 0
-     * basic debug or 1
-     * 
-     * Debug port can be changed via ESP_MAIL_DEFAULT_DEBUG_PORT in ESP_Mail_FS.h
-    */
+   * none debug or 0
+   * basic debug or 1
+   * 
+   * Debug port can be changed via ESP_MAIL_DEFAULT_DEBUG_PORT in ESP_Mail_FS.h
+  */
     smtp.debug(1);
 
     /* Set the callback function to get the sending results */
@@ -100,37 +91,37 @@ void setup()
     ESP_Mail_Session session;
 
     /** ########################################################
-     * Some properties of SMTPSession data and parameters pass to 
-     * SMTP_Message class accept the pointer to constant char
-     * i.e. const char*. 
-     * 
-     * You may assign a string literal to that properties or function 
-     * like below example.
-     *   
-     * session.login.user_domain = "mydomain.net";
-     * session.login.user_domain = String("mydomain.net").c_str();
-     * 
-     * or
-     * 
-     * String doman = "mydomain.net";
-     * session.login.user_domain = domain.c_str();
-     * 
-     * And
-     * 
-     * String name = "Jack " + String("dawson");
-     * String email = "jack_dawson" + String(123) + "@mail.com";
-     * 
-     * message.addRecipient(name.c_str(), email.c_str());
-     * 
-     * message.addHeader(String("Message-ID: <abcde.fghij@gmail.com>").c_str());
-     * 
-     * or
-     * 
-     * String header = "Message-ID: <abcde.fghij@gmail.com>";
-     * message.addHeader(header.c_str());
-     * 
-     * ###########################################################
-    */
+   * Some properties of SMTPSession data and parameters pass to 
+   * SMTP_Message class accept the pointer to constant char
+   * i.e. const char*. 
+   * 
+   * You may assign a string literal to that properties or function 
+   * like below example.
+   *   
+   * session.login.user_domain = "mydomain.net";
+   * session.login.user_domain = String("mydomain.net").c_str();
+   * 
+   * or
+   * 
+   * String doman = "mydomain.net";
+   * session.login.user_domain = domain.c_str();
+   * 
+   * And
+   * 
+   * String name = "Jack " + String("dawson");
+   * String email = "jack_dawson" + String(123) + "@mail.com";
+   * 
+   * message.addRecipient(name.c_str(), email.c_str());
+   * 
+   * message.addHeader(String("Message-ID: <abcde.fghij@gmail.com>").c_str());
+   * 
+   * or
+   * 
+   * String header = "Message-ID: <abcde.fghij@gmail.com>";
+   * message.addHeader(header.c_str());
+   * 
+   * ###########################################################
+  */
 
     /* Set the session config */
     session.server.host_name = SMTP_HOST;
@@ -145,57 +136,91 @@ void setup()
     /* Set the message headers */
     message.sender.name = "ESP Mail";
     message.sender.email = AUTHOR_EMAIL;
-    message.subject = "Test sending flowed plain text Email";
+    message.subject = "Test sending plain text Email with PSRAM attachment";
     message.addRecipient("Someone", "change_this@your_mail_dot_com");
 
-    /** The option to add soft line break to to the message for
-     * the long text message > 78 characters (rfc 3676)
-     * Some Servers may not compliant with the standard.
-    */
-    message.text.flowed = true;
-
-    /** if the option message.text.flowed is true,
-     * the following plain text message will be wrapped.
-    */
-    message.text.content = "The text below is the long quoted text which breaks into several lines.\r\n\r\n>> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\r\n\r\nThis is the normal short text.\r\n\r\nAnother long text, abcdefg hijklmnop qrstuv wxyz abcdefg hijklmnop qrstuv wxyz abcdefg hijklmnop qrstuv wxyz.";
+    String textMsg = "This is simple plain text message with PSRAM attachment";
+    message.text.content = textMsg.c_str();
 
     /** The Plain text message character set e.g.
-     * us-ascii
-     * utf-8
-     * utf-7
-     * The default value is utf-8
-    */
+   * us-ascii
+   * utf-8
+   * utf-7
+   * The default value is utf-8
+  */
     message.text.charSet = "us-ascii";
 
     /** The content transfer encoding e.g.
-     * enc_7bit or "7bit" (not encoded)
-     * enc_qp or "quoted-printable" (encoded)
-     * enc_base64 or "base64" (encoded)
-     * enc_binary or "binary" (not encoded)
-     * enc_8bit or "8bit" (not encoded)
-     * The default value is "7bit"
-    */
+   * enc_7bit or "7bit" (not encoded)
+   * enc_qp or "quoted-printable" (encoded)
+   * enc_base64 or "base64" (encoded)
+   * enc_binary or "binary" (not encoded)
+   * enc_8bit or "8bit" (not encoded)
+   * The default value is "7bit"
+  */
     message.text.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
 
+    //If this is a reply message
+    //message.in_reply_to = "<parent message id>";
+    //message.references = "<parent references> <parent message id>";
+
     /** The message priority
-     * esp_mail_smtp_priority_high or 1
-     * esp_mail_smtp_priority_normal or 3
-     * esp_mail_smtp_priority_low or 5
-     * The default value is esp_mail_smtp_priority_low
-    */
+   * esp_mail_smtp_priority_high or 1
+   * esp_mail_smtp_priority_normal or 3
+   * esp_mail_smtp_priority_low or 5
+   * The default value is esp_mail_smtp_priority_low
+  */
     message.priority = esp_mail_smtp_priority::esp_mail_smtp_priority_low;
 
+    //message.response.reply_to = "someone@somemail.com";
+    //message.response.return_path = "someone@somemail.com";
+
     /** The Delivery Status Notifications e.g.
-     * esp_mail_smtp_notify_never
-     * esp_mail_smtp_notify_success
-     * esp_mail_smtp_notify_failure
-     * esp_mail_smtp_notify_delay
-     * The default value is esp_mail_smtp_notify_never
-    */
+   * esp_mail_smtp_notify_never
+   * esp_mail_smtp_notify_success
+   * esp_mail_smtp_notify_failure
+   * esp_mail_smtp_notify_delay
+   * The default value is esp_mail_smtp_notify_never
+  */
     //message.response.notify = esp_mail_smtp_notify_success | esp_mail_smtp_notify_failure | esp_mail_smtp_notify_delay;
 
     /* Set the custom message header */
     message.addHeader("Message-ID: <abcde.fghij@gmail.com>");
+
+
+    //For Root CA certificate verification (ESP8266 and ESP32 only)
+    //session.certificate.cert_data = rootCACert;
+    //or
+    //session.certificate.cert_file = "/path/to/der/file";
+    //session.certificate.cert_file_storage_type = esp_mail_file_storage_type_flash; // esp_mail_file_storage_type_sd
+    //session.certificate.verify = true;
+
+    //The WiFiNINA firmware the Root CA certification can be added via the option in Firmware update tool in Arduino IDE
+
+    /* The attachment data item */
+    SMTP_Attachment att[1];
+    int attIndex = 0;
+
+#if defined(ESP32)
+
+    int dlen = 3 * 1024 * 1024 + 512 * 1024;
+    uint8_t *data = (uint8_t *)ps_malloc(dlen);
+
+    if (psramFound())
+    {
+        memset(data, 0xff, dlen);
+
+        att[attIndex].descr.filename = "data.dat";
+        att[attIndex].descr.mime = "application/octet-stream";
+        att[attIndex].blob.data = data;
+        att[attIndex].blob.size = dlen;
+        att[attIndex].descr.transfer_encoding = Content_Transfer_Encoding::enc_base64;
+
+        /* Add inline image to the message */
+        message.addInlineImage(att[attIndex]);
+    }
+
+#endif
 
     /* Connect to server with the session config */
     if (!smtp.connect(&session))

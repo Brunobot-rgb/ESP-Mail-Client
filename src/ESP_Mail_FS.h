@@ -21,6 +21,11 @@
 #define ESP_Mail_DEFAULT_FLASH_FS SPIFFS
 #endif
 
+/** Use PSRAM for supported ESP32 module */
+#if defined(ESP32)
+#define ESP_Mail_USE_PSRAM
+#endif
+
 /**
  * To use SD card file systems with different hardware interface
  * e.g. SDMMC hardware bus on the ESP32
@@ -44,5 +49,11 @@
 #ifndef ESP_MAIL_DEFAULT_DEBUG_PORT
 #define ESP_MAIL_DEFAULT_DEBUG_PORT Serial
 #endif
+
+//Enable IMAP class
+#define ENABLE_IMAP //comment this line to disable or exclude it
+
+//Enable SMTP class
+#define ENABLE_SMTP //comment this line to disable or exclude it
 
 #endif
